@@ -1,31 +1,571 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>SafePath Shield</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+      :root {
+        --bg: #020817;
+        --card: #020817;
+        --border: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #6366f1;
+        --danger: #ef4444;
+        --safe: #22c55e;
+        --gun: #3b82f6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+      }
+
+      .page-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      /* LOGIN */
+      #login-screen {
+        width: 100%;
+        max-width: 380px;
+        padding: 22px 22px 18px;
+        border-radius: 18px;
+        background: radial-gradient(circle at top left, #111827, #020817);
+        border: 1px solid var(--border);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      }
+
+      #login-screen h1 {
+        margin: 0 0 4px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      #login-screen p {
+        margin: 0 0 16px;
+        font-size: 0.86rem;
+        color: var(--muted);
+      }
+
+      .field-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .input {
+        width: 100%;
+        padding: 9px 10px;
+        border-radius: 10px;
+        border: 1px solid #111827;
+        background: #020817;
+        color: var(--text);
+        font-size: 0.9rem;
+        outline: none;
+      }
+
+      .input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.18);
+      }
+
+      .btn {
+        width: 100%;
+        border: none;
+        margin-top: 10px;
+        padding: 10px 0;
+        border-radius: 999px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        cursor: pointer;
+        background: linear-gradient(to right, var(--accent), #4f46e5);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-shadow: 0 10px 26px rgba(79, 70, 229, 0.4);
+      }
+
+      .hint {
+        margin-top: 6px;
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+
+      /* APP */
+      #app {
+        display: none;
+        width: 100%;
+        max-width: 1320px;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+
+      .app-header-title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .app-header-title h2 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.3rem;
+      }
+
+      .app-header-title span {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .app-user {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: right;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(260px, 1.4fr);
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 12px 12px 10px;
+        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.6);
+      }
+
+      .card h3 {
+        margin: 0 0 4px;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      .card p {
+        margin: 0 0 8px;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      .upload-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 4px;
+      }
+
+      .upload-label {
+        padding: 6px 9px;
+        border-radius: 999px;
+        border: 1px dashed #4b5563;
+        font-size: 0.74rem;
+        color: var(--muted);
+        cursor: pointer;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .upload-label span {
+        color: var(--accent);
+      }
+
+      .upload-label input[type="file"] {
+        display: none;
+      }
+
+      .upload-btn {
+        padding: 6px 11px;
+        border-radius: 999px;
+        border: none;
+        background: #111827;
+        color: var(--accent);
+        font-size: 0.75rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .upload-status {
+        margin-top: 5px;
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .map-wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #000;
+        margin-top: 4px;
+      }
+
+      #map-base {
+        width: 100%;
+        display: block;
+        user-select: none;
+      }
+
+      #map-overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .zone {
+        fill: rgba(148, 163, 253, 0.06);
+        stroke: rgba(148, 163, 253, 0.7);
+        stroke-width: 2;
+        transition: all 0.18s ease;
+      }
+
+      .zone-label {
+        fill: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+      }
+
+      .zone.safe {
+        fill: rgba(34, 197, 94, 0.14);
+        stroke: var(--safe);
+      }
+
+      .zone.fire {
+        fill: rgba(239, 68, 68, 0.35);
+        stroke: var(--danger);
+        stroke-width: 3;
+      }
+
+      .zone.gun {
+        fill: rgba(59, 130, 246, 0.35);
+        stroke: var(--gun);
+        stroke-width: 3;
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+        margin-top: 6px;
+        font-size: 0.74rem;
+        color: var(--muted);
+        flex-wrap: wrap;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .dot {
+        width: 14px;
+        height: 9px;
+        border-radius: 3px;
+        background: rgba(148, 163, 253, 0.8);
+      }
+      .dot.safe {
+        background: var(--safe);
+      }
+      .dot.fire {
+        background: var(--danger);
+      }
+      .dot.gun {
+        background: var(--gun);
+      }
+
+      #room-states {
+        margin-top: 6px;
+        padding: 6px;
+        border-radius: 10px;
+        background: #020817;
+        border: 1px solid #111827;
+        font-size: 0.76rem;
+        color: var(--muted);
+        white-space: pre-wrap;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #020817;
+        font-size: 0.68rem;
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      #threeD-img {
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 6px;
+        display: none;
+        background: #000;
+      }
+
+      /* CAMERA WALL */
+      .camera-wall {
+        margin-top: 20px;
+      }
+
+      .camera-grid {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 16px;
+      }
+
+      .cam-tile {
+        position: relative;
+        background: #020817;
+        border-radius: 12px;
+        border: 1px solid #111827;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+        transition: transform 0.2s ease;
+      }
+
+      .cam-tile:hover {
+        transform: scale(1.02);
+      }
+
+      .cam-label {
+        position: absolute;
+        top: 6px;
+        left: 8px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.7);
+        font-size: 0.7rem;
+        color: var(--muted);
+        z-index: 2;
+      }
+
+      .cam-img,
+      .cam-video {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+      }
+
+      @media (min-width: 1500px) {
+        .cam-img,
+        .cam-video {
+          height: 300px;
+        }
+      }
+    </style>
   </head>
+
   <body>
-    <h1>SafePath Shield</h1>
+    <div class="page-wrap">
+      <!-- LOGIN SCREEN -->
+      <div id="login-screen">
+        <h1>🛡️ SafePath Shield</h1>
+        <p>
+          Secure, camera-aware evacuation intelligence. Sign in with any ID to
+          demo.
+        </p>
 
-    <div id="controls">
-      <label>Hazards (comma-separated node IDs, e.g. H1,R2):</label>
-      <input id="hazardsInput" />
-      <button id="updateBtn">Apply</button>
+        <div class="field">
+          <div class="field-label">Operator ID</div>
+          <input
+            id="login-id"
+            class="input"
+            placeholder="Type anything to continue"
+          />
+        </div>
+
+        <button id="login-btn" class="btn">Enter Command Center →</button>
+
+        <div class="hint">No password needed for this demo.</div>
+      </div>
+
+      <!-- MAIN APP -->
+      <div id="app">
+        <div class="app-header">
+          <div class="app-header-title">
+            <h2>SafePath Shield – Command Center</h2>
+            <span
+              >Live floorplan overlay driven by AI fire & firearm
+              detection.</span
+            >
+          </div>
+          <div class="app-user">
+            <div id="user-label"></div>
+            <div class="pill">
+              <span
+                style="
+                  width: 7px;
+                  height: 7px;
+                  border-radius: 999px;
+                  background: #22c55e;
+                "
+              ></span>
+              Linked to vision engine
+            </div>
+          </div>
+        </div>
+
+        <!-- 2D Map + States -->
+        <div class="grid">
+          <div class="card">
+            <h3>1. Floor Plan</h3>
+            <div class="map-wrap">
+              <img id="map-base" src="floorplan.png" alt="Floorplan" />
+              <svg
+                id="map-overlay"
+                viewBox="0 0 1530 1080"
+                preserveAspectRatio="xMidYMid meet"
+              >
+                <rect
+                  id="zone-R2"
+                  class="zone safe"
+                  x="90"
+                  y="70"
+                  width="360"
+                  height="280"
+                />
+                <text x="100" y="96" class="zone-label">R2</text>
+                <rect
+                  id="zone-R3"
+                  class="zone safe"
+                  x="480"
+                  y="70"
+                  width="380"
+                  height="280"
+                />
+                <text x="490" y="96" class="zone-label">R3</text>
+                <rect
+                  id="zone-R5"
+                  class="zone safe"
+                  x="980"
+                  y="110"
+                  width="170"
+                  height="170"
+                />
+                <text x="990" y="132" class="zone-label">R5</text>
+                <rect
+                  id="zone-R6"
+                  class="zone safe"
+                  x="1200"
+                  y="40"
+                  width="260"
+                  height="360"
+                />
+                <text x="1210" y="62" class="zone-label">R6</text>
+                <rect
+                  id="zone-R4"
+                  class="zone safe"
+                  x="520"
+                  y="430"
+                  width="380"
+                  height="260"
+                />
+                <text x="530" y="452" class="zone-label">R4</text>
+                <rect
+                  id="zone-R1"
+                  class="zone safe"
+                  x="80"
+                  y="520"
+                  width="360"
+                  height="320"
+                />
+                <text x="90" y="542" class="zone-label">R1</text>
+              </svg>
+            </div>
+          </div>
+
+          <div>
+            <div class="card">
+              <h3>2. Live Threat States</h3>
+              <div id="room-states">Waiting for data…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAMERA WALL -->
+        <div class="card camera-wall">
+          <h3>3. Camera Wall</h3>
+          <p>Simulated feeds per room (R5 uses live webcam).</p>
+          <div class="camera-grid">
+            <div class="cam-tile">
+              <div class="cam-label">R1 – Lobby / Elevator</div>
+              <img src="elevator.jpeg" alt="R1 feed" class="cam-img" />
+            </div>
+            <div class="cam-tile">
+              <div class="cam-label">R2 – Ballroom</div>
+              <img src="ballroom.jpeg" alt="R2 feed" class="cam-img" />
+            </div>
+            <div class="cam-tile">
+              <div class="cam-label">R3 – Hallway</div>
+              <img src="hallway.jpeg" alt="R3 feed" class="cam-img" />
+            </div>
+            <div class="cam-tile">
+              <div class="cam-label">R4 – Kitchen</div>
+              <img src="kitchen.jpeg" alt="R4 feed" class="cam-img" />
+            </div>
+            <div class="cam-tile">
+              <div class="cam-label">R5 – Door Lock Camera (Webcam)</div>
+              <video
+                id="cam-R5"
+                class="cam-video"
+                autoplay
+                muted
+                playsinline
+              ></video>
+            </div>
+            <div class="cam-tile">
+              <div class="cam-label">R6 – Room Overview</div>
+              <img src="roo.jpeg" alt="R6 feed" class="cam-img" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="layout">
-      <div id="mapPanel">
-        <h2>Map</h2>
-        <canvas id="mapCanvas" width="420" height="260"></canvas>
-      </div>
-      <div id="planPanel">
-        <h2>Plan</h2>
-        <div id="plan"></div>
-      </div>
-    </div>
-
-    <script src="/static/app.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

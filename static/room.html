@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>SafePath – Room Instructions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #02040a;
+        color: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+      }
+      h2 {
+        margin: 0 0 12px 0;
+        font-size: 24px;
+      }
+      #card {
+        background: #070b16;
+        padding: 18px;
+        border-radius: 12px;
+        max-width: 420px;
+        margin: 0 auto;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+      }
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: none;
+        font-size: 15px;
+      }
+      button {
+        background: #f5f5f5;
+        color: #02040a;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      #status {
+        margin-top: 16px;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>SafePath – Room Instructions</h2>
+    <div id="card">
+      <label for="roomSelect">Select your room:</label>
+      <select id="roomSelect">
+        <option value="R1">Room 1</option>
+        <option value="R2">Room 2</option>
+      </select>
+      <button id="refreshBtn">Get Instructions</button>
+      <div id="status"></div>
+    </div>
+
+    <script>
+      async function fetchRoom(roomId) {
+        const res = await fetch(`/api/room/${roomId}`);
+        return res.json();
+      }
+
+      async function update() {
+        const room = document.getElementById("roomSelect").value;
+        const data = await fetchRoom(room);
+        const div = document.getElementById("status");
+
+        if (data.error) {
+          div.innerHTML = "Unknown room.";
+          return;
+        }
+
+        const info = data.info;
+        if (info.mode === "LOCKDOWN") {
+          div.innerHTML = `🚨 <b>${room}</b>: LOCKDOWN<br/>Stay inside, lock doors, lights off, stay silent away from windows.`;
+        } else {
+          div.innerHTML = `✅ <b>${room}</b>: EVACUATE towards <b>${info.exit}</b>.<br/>Follow corridor markings and SafePath indicators.`;
+        }
+      }
+
+      document.getElementById("refreshBtn").onclick = update;
+      document.getElementById("roomSelect").onchange = update;
+
+      setInterval(update, 3000);
+      update();
+    </script>
+  </body>
+</html>

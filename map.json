@@ -2,15 +2,25 @@
     "nodes": [
       { "id": "R1", "type": "room", "label": "Room 1" },
       { "id": "R2", "type": "room", "label": "Room 2" },
-      { "id": "H1", "type": "hall", "label": "Hallway 1" },
-      { "id": "H2", "type": "hall", "label": "Hallway 2" },
-      { "id": "X1", "type": "exit", "label": "Exit 1" }
+      { "id": "R3", "type": "room", "label": "Room 3" },
+      { "id": "R4", "type": "room", "label": "Room 4" },
+      { "id": "R5", "type": "room", "label": "Room 5" },
+      { "id": "R6", "type": "room", "label": "Room 6" },
+      { "id": "R7", "type": "room", "label": "Room 7" },
+      { "id": "R8", "type": "room", "label": "Room 8" },
+      { "id": "H1", "type": "hall", "label": "Main Hallway" },
+      { "id": "X1", "type": "exit", "label": "Exit" }
     ],
     "edges": [
       { "from": "R1", "to": "H1", "door_id": "D_R1_H1", "weight": 1 },
       { "from": "R2", "to": "H1", "door_id": "D_R2_H1", "weight": 1 },
-      { "from": "H1", "to": "H2", "door_id": "D_H1_H2", "weight": 1 },
-      { "from": "H2", "to": "X1", "door_id": "D_H2_X1", "weight": 1 }
+      { "from": "R3", "to": "H1", "door_id": "D_R3_H1", "weight": 1 },
+      { "from": "R4", "to": "H1", "door_id": "D_R4_H1", "weight": 1 },
+      { "from": "R5", "to": "H1", "door_id": "D_R5_H1", "weight": 1 },
+      { "from": "R6", "to": "H1", "door_id": "D_R6_H1", "weight": 1 },
+      { "from": "R7", "to": "H1", "door_id": "D_R7_H1", "weight": 1 },
+      { "from": "R8", "to": "H1", "door_id": "D_R8_H1", "weight": 1 },
+      { "from": "H1", "to": "X1", "door_id": "D_H1_X1", "weight": 1 }
     ]
   }
   
